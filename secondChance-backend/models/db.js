@@ -27,9 +27,9 @@ async function connectToDatabase() {
         // Return database instance
         return dbInstance;
         
-    } catch (err) {
-        console.log('An error ocurred with the database connection');
-        console.log(err);
+    } catch (e) {
+        logger.console.error('oops something went wrong', e)
+        next (e);
     }
     
 }
