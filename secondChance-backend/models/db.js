@@ -13,16 +13,25 @@ async function connectToDatabase() {
         return dbInstance
     };
 
-    const client = new MongoClient(url);      
+    try {
+        // Creating a new MongoClient instance
+        const client = new MongoClient(url);      
 
-    // Task 1: Connect to MongoDB
-    // {{insert code}}
+        // Connect to MongoDB server
+        await client.connect();
+        console.log("Connected to MongoDB server");
 
-    // Task 2: Connect to database giftDB and store in variable dbInstance
-    //{{insert code}}
+        // Connect to database giftDB
+        dbInstance = client.db('giftDB');
 
-    // Task 3: Return database instance
-    // {{insert code}}
+        // Return database instance
+        return dbInstance;
+        
+    } catch (err) {
+        console.log('An error ocurred with the database connection');
+        console.log(err);
+    }
+    
 }
 
-module.exports = connectToDatabase;
+module.exports = connectToDatabase; 
