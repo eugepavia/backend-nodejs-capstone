@@ -22,17 +22,21 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
+
 // Get all secondChanceItems
 router.get('/', async (req, res, next) => {
     logger.info('/ called');
     try {
-        //Step 2: task 1 - insert code here
-        //Step 2: task 2 - insert code here
-        //Step 2: task 3 - insert code here
-        //Step 2: task 4 - insert code here
+        // Connect to MongoDB server
+        const db = await connectToDatabase();
 
+        // Retrieve secondChanceItems collection
         const collection = db.collection("secondChanceItems");
+
+        // Fetch all secondChangeItems, chained with toArray() method
         const secondChanceItems = await collection.find({}).toArray();
+
+        // Return secondChangeItems
         res.json(secondChanceItems);
     } catch (e) {
         logger.console.error('oops something went wrong', e)
@@ -41,16 +45,32 @@ router.get('/', async (req, res, next) => {
 });
 
 // Add a new item
-router.post('/', {Step 3: Task 6 insert code here}, async(req, res,next) => {
+router.post('/',upload.single('file'), async(req, res,next) => {
     try {
 
-        //Step 3: task 1 - insert code here
-        //Step 3: task 2 - insert code here
-        //Step 3: task 3 - insert code here
-        //Step 3: task 4 - insert code here
-        //Step 3: task 5 - insert code here
+        // Connect to MongoDB server
+        const db = await connectToDatabase();
+
+        // Retrieve secondChanceItems collection
+        const collection = db.collection("secondChanceItems");
+
+        // Create a new secondChangeItem
+        let secondChanceItem = req.body;
+
+        // Get last id, increment 1 and set it to new item
+        const lastItem = await collection.find().sort({'id':-1}).limit(1);
+        secondChanceItem.id = (parseInt(lastItem.id) + 1).toString();
+
+        // Set current date to new item
+        const date_added = Math.floor(new Date().getTime() / 1000);
+        secondChanceItem.date_added = date_added
+
+        // Add new item to database
+        secondChanceItem = await collection.insertOne(secondChanceItem);
+
         res.status(201).json(secondChanceItem.ops[0]);
     } catch (e) {
+        logger.console.error('oops something went wrong', e)
         next(e);
     }
 });
