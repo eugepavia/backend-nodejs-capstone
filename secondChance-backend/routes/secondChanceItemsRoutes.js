@@ -68,7 +68,9 @@ router.post('/',upload.single('file'), async(req, res,next) => {
         // Add new item to database
         secondChanceItem = await collection.insertOne(secondChanceItem);
 
-        res.status(201).json(secondChanceItem.ops[0]);
+        // Return confirmation
+        return res.status(201).json(secondChanceItem.ops[0]);
+
     } catch (e) {
         logger.console.error('oops something went wrong', e)
         next(e);
@@ -78,11 +80,29 @@ router.post('/',upload.single('file'), async(req, res,next) => {
 // Get a single secondChanceItem by ID
 router.get('/:id', async (req, res, next) => {
     try {
-        //Step 4: task 1 - insert code here
-        //Step 4: task 2 - insert code here
-        //Step 4: task 3 - insert code here
-        //Step 4: task 4 - insert code here
+
+        let id = req.params.id;
+
+        // Connect to MongoDB server
+        const db = await connectToDatabase();
+
+        // Retrieve secondChanceItems collection
+        const collection = db.collection("secondChanceItems");
+
+        // Find item by id
+        let itemById = await collection.findOne({'id':id});
+
+        //Return message if not found
+        if (!itemById) {
+            logger.error('Item not found');
+            return res.status(404).json({error:'Item not found'});
+        }    
+        
+        // Return item if found
+        return res.status(200).json(itemById);
+
     } catch (e) {
+        logger.console.error('oops something went wrong', e)
         next(e);
     }
 });
@@ -90,12 +110,45 @@ router.get('/:id', async (req, res, next) => {
 // Update and existing item
 router.put('/:id', async(req, res,next) => {
     try {
-        //Step 5: task 1 - insert code here
-        //Step 5: task 2 - insert code here
-        //Step 5: task 3 - insert code here
-        //Step 5: task 4 - insert code here
-        //Step 5: task 5 - insert code here
+
+        let id = req.params.id;
+
+        // Connect to MongoDB server
+        const db = await connectToDatabase();
+
+        // Retrieve secondChanceItems collection
+        const collection = db.collection("secondChanceItems");
+
+        // Find item by id
+        let itemById = await collection.findOne({'id':id});
+
+        //Return message if not found
+        if (!itemById) {
+            logger.error('Item not found');
+            return res.status(404).json({error:'Item not found'});
+        }
+
+        // If found, update attributes
+        itemById.category = req.body.category;
+        itemById.condition = req.body.condition;
+        itemById.age_days = req.body.age_days;
+        itemById.description = req.body.description;
+        itemById.age_years = Number((itemById.age_days / 365).toFixed(1));
+        itemById.updatedAt = new Date();
+        // itemById.updatedAt = Math.floor(new Date().getTime() / 1000);
+
+        const updatedItem = await collection.findOneAndUpdate({'id':id},{'$set':itemById},{returnDocument:'after'});
+
+        // Send confirmation
+        if (updatedItem) {
+            return res.status(200).json({'update':'success'});
+        } else {
+            logger.error('Upload failed');
+            return res.status(400).json({'update':'failed'});
+        }
+
     } catch (e) {
+        logger.console.error('oops something went wrong', e)
         next(e);
     }
 });
@@ -103,11 +156,31 @@ router.put('/:id', async(req, res,next) => {
 // Delete an existing item
 router.delete('/:id', async(req, res,next) => {
     try {
-        //Step 6: task 1 - insert code here
-        //Step 6: task 2 - insert code here
-        //Step 6: task 3 - insert code here
-        //Step 6: task 4 - insert code here
+        
+        let id = req.params.id;
+
+        // Connect to MongoDB server
+        const db = await connectToDatabase();
+
+        // Retrieve secondChanceItems collection
+        const collection = db.collection("secondChanceItems");
+
+        // Find item by id
+        let itemById = await collection.findOne({'id':id});
+
+        //Return message if not found
+        if (!itemById) {
+            logger.error('Item not found');
+            return res.status(404).json({error:'Item not found'});
+        }
+
+        // Delete item
+        await collection.deleteOne({'id':id});
+
+        return res.status(200).json({'delete':'success'});
+
     } catch (e) {
+        logger.console.error('oops something went wrong', e)
         next(e);
     }
 });
