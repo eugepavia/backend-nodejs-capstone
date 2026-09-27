@@ -40,7 +40,7 @@ app.use(pinoHttp({ logger }));
 //{{insert code here}}
 
 app.use('/api/secondchance/items',secondChanceItemsRoutes);
-app.use('api/secondchance/search',searchRoutes);
+app.use('/api/secondchance/search',searchRoutes);
 
 
 // Global Error Handler
