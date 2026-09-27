@@ -29,12 +29,16 @@ router.get('/', async (req, res, next) => {
     try {
         // Connect to MongoDB server
         const db = await connectToDatabase();
+        console.log('database connected')
 
         // Retrieve secondChanceItems collection
         const collection = db.collection("secondChanceItems");
+        console.log('collection retrieved')
 
         // Fetch all secondChangeItems, chained with toArray() method
         const secondChanceItems = await collection.find({}).toArray();
+        console.log('items found')
+        console.log(secondChanceItems)
 
         // Return secondChangeItems
         res.json(secondChanceItems);
