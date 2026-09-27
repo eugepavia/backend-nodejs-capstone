@@ -50,23 +50,29 @@ router.post('/',upload.single('file'), async(req, res,next) => {
 
         // Connect to MongoDB server
         const db = await connectToDatabase();
+        console.log('Connected to DB');
 
         // Retrieve secondChanceItems collection
         const collection = db.collection("secondChanceItems");
+        console.log('Collection retrieved');
 
         // Create a new secondChangeItem
         let secondChanceItem = req.body;
+        console.log('Info received: \n' + secondChanceItem);
 
         // Get last id, increment 1 and set it to new item
         const lastItem = await collection.find().sort({'id':-1}).limit(1);
         secondChanceItem.id = (parseInt(lastItem.id) + 1).toString();
+        console.log('ID assigned: ',secondChanceItem.id);
 
         // Set current date to new item
         const date_added = Math.floor(new Date().getTime() / 1000);
         secondChanceItem.date_added = date_added
+        console.log('date added ',secondChanceItem.date_added);
 
         // Add new item to database
         secondChanceItem = await collection.insertOne(secondChanceItem);
+        console.log('new item added');
 
         // Return confirmation
         return res.status(201).json(secondChanceItem.ops[0]);

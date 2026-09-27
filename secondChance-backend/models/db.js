@@ -21,8 +21,8 @@ async function connectToDatabase() {
         await client.connect();
         console.log("Connected to MongoDB server");
 
-        // Connect to database giftDB
-        dbInstance = client.db('giftDB');
+        // Connect to database giftDB (?)
+        dbInstance = client.db('secondChance');
 
         // Return database instance
         return dbInstance;
