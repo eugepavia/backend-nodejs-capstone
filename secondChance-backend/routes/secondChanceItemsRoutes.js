@@ -43,7 +43,7 @@ router.get('/', async (req, res, next) => {
         // Return secondChangeItems
         res.json(secondChanceItems);
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        logger.error('oops something went wrong', e)
         next(e);
     }
 });
@@ -78,7 +78,7 @@ router.post('/',upload.single('file'), async(req, res,next) => {
         return res.status(201).json(secondChanceItem);
 
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        logger.error('oops something went wrong', e)
         next(e);
     }
 });
@@ -108,7 +108,7 @@ router.get('/:id', async (req, res, next) => {
         return res.status(200).json(itemById);
 
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        logger.error('oops something went wrong', e)
         next(e);
     }
 });
@@ -153,7 +153,7 @@ router.put('/:id', async(req, res,next) => {
         }
 
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        logger.error('oops something went wrong', e)
         next(e);
     }
 });
@@ -185,7 +185,7 @@ router.delete('/:id', async(req, res,next) => {
         return res.status(200).json({'delete':'success'});
 
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        logger.error('oops something went wrong', e)
         next(e);
     }
 });

@@ -21,13 +21,13 @@ async function connectToDatabase() {
         await client.connect();
 
         // Connect to database giftDB (?)
-        dbInstance = client.db('dbName');
+        dbInstance = client.db(dbName);
 
         // Return database instance
         return dbInstance;
         
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        logger.error('oops something went wrong', e)
         next (e);
     }
     

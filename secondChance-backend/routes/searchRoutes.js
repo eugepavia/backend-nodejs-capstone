@@ -34,7 +34,7 @@ router.get('/', async (req, res, next) => {
 
         res.status(200).json(gifts);
     } catch (e) {
-        logger.console.error('oops something went wrong', e)
+        logger.error('oops something went wrong', e)
         next(e)
     }
 });
