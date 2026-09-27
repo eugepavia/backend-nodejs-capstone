@@ -50,37 +50,28 @@ router.post('/',upload.single('file'), async(req, res,next) => {
 
         // Connect to MongoDB server
         const db = await connectToDatabase();
-        console.log('Connected to DB');
 
         // Retrieve secondChanceItems collection
         const collection = db.collection("secondChanceItems");
-        console.log('Collection retrieved');
 
         // Create a new secondChangeItem
         let secondChanceItem = req.body;
-        console.log('Info received:' + JSON.stringify(secondChanceItem));
 
         // Get last id, increment 1 and set it to new item
-
-
         const lastItemQuery = await collection.find().sort({'id':-1}).limit(1);       
         await lastItemQuery.forEach(item => {
            secondChanceItem.id = (parseInt(item.id) + 1).toString();
-        });
-        console.log('ID assigned: ',secondChanceItem.id);        
-        
+        });       
 
         // Set current date to new item
         const date_added = Math.floor(new Date().getTime() / 1000);
         secondChanceItem.date_added = date_added
-        console.log('date added ',secondChanceItem.date_added);
 
         // Add new item to database
         secondChanceItem = await collection.insertOne(secondChanceItem);
-        console.log('new item added');
 
         // Return confirmation
-        return res.status(201).json({'upload':'success'});
+        return res.status(201).json(secondChanceItem);
 
     } catch (e) {
         logger.console.error('oops something went wrong', e)
@@ -146,7 +137,6 @@ router.put('/:id', async(req, res,next) => {
         itemById.description = req.body.description;
         itemById.age_years = Number((itemById.age_days / 365).toFixed(1));
         itemById.updatedAt = new Date();
-        // itemById.updatedAt = Math.floor(new Date().getTime() / 1000);
 
         const updatedItem = await collection.findOneAndUpdate({'id':id},{'$set':itemById},{returnDocument:'after'});
 
