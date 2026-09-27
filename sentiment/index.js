@@ -46,7 +46,7 @@ app.post('/sentiment', async (req, res) => {
         res.status(200).json({sentimentScore: analysisResult, sentiment: sentiment})
     } catch (error) {
         logger.error(`Error performing sentiment analysis: ${error}`);
-        res.status(500).json({error:'An error has occured'});
+        res.status(500).json({'message': 'Error performing sentiment analysis'});
         next(e)
     }
 });
