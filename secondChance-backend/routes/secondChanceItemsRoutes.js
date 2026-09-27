@@ -58,12 +58,17 @@ router.post('/',upload.single('file'), async(req, res,next) => {
 
         // Create a new secondChangeItem
         let secondChanceItem = req.body;
-        console.log('Info received: \n' + secondChanceItem);
+        console.log('Info received:' + JSON.stringify(secondChanceItem));
 
         // Get last id, increment 1 and set it to new item
-        const lastItem = await collection.find().sort({'id':-1}).limit(1);
-        secondChanceItem.id = (parseInt(lastItem.id) + 1).toString();
-        console.log('ID assigned: ',secondChanceItem.id);
+
+
+        const lastItemQuery = await collection.find().sort({'id':-1}).limit(1);       
+        await lastItemQuery.forEach(item => {
+           secondChanceItem.id = (parseInt(item.id) + 1).toString();
+        });
+        console.log('ID assigned: ',secondChanceItem.id);        
+        
 
         // Set current date to new item
         const date_added = Math.floor(new Date().getTime() / 1000);
@@ -75,7 +80,7 @@ router.post('/',upload.single('file'), async(req, res,next) => {
         console.log('new item added');
 
         // Return confirmation
-        return res.status(201).json(secondChanceItem.ops[0]);
+        return res.status(201).json({'upload':'success'});
 
     } catch (e) {
         logger.console.error('oops something went wrong', e)
