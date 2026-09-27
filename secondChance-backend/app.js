@@ -33,6 +33,7 @@ const pinoHttp = require('pino-http');
 const logger = require('./logger');
 
 app.use(pinoHttp({ logger }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Use Routes
 
