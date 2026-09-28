@@ -3,8 +3,10 @@ const express = require('express');
 const router = express.Router();
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { body, validationResult } = require('express-validator');
 const connectToDatabase = require('../models/db');
 const pino = require('pino');
+const { ReturnDocument } = require('mongodb');
 const logger = pino();
 
 const secretKey = process.env.JWT_SECRET;
@@ -93,8 +95,58 @@ router.post('/login', async (req, res) => {
     } catch (e) {
         logger.error('oops something went wrong', e);
         return res.status(500).send('Internal server error');
-
     }
+});
+
+// Update profile
+router.put('/update', async (req, res) => {
+    // Validate input
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+        logger.error('Validation errors in update request', errors.array());
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+try {
+    const email = req.headers.email;
+
+    // Check if `email` is present in the header
+    if (!email) {
+        logger.error('Email not found in request headers');
+        return res.status(400).json({ error: 'User email not found' });
+    }
+
+    // Connect to MongoDB
+    const db = await connectToDatabase();
+
+    // Access users collection
+    const collection = db.collection('users');
+
+    // Find the user credentials in database
+    const existingUser = await collection.findOne({'email':email});
+    if (!existingUser) {
+        logger.error('User not found');
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update the user credentials in the database
+    existingUser.firstName = req.body.name;
+    existingUser.updatedAt = new Date();
+    const updatedUser = await collection.findOneAndUpdate(
+        {'email':email},
+        {$set:existingUser},
+        {returnDocument:'after'}
+    );
+    
+    // Create JWT authentication
+    const payload = {user:{id:existingUser._id.toString()}};
+    const authtoken = jwt.sign(payload,secretKey,{expiresIn:'1h'});
+    
+    res.json({authtoken});
+} catch (e) {
+    logger.error('oops something went wrong', e);
+    return res.status(500).send('Internal server error');
+}
 });
 
 
