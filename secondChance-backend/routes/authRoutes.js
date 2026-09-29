@@ -139,7 +139,7 @@ try {
     );
     
     // Create JWT authentication
-    const payload = {user:{id:existingUser._id.toString()}};
+    const payload = {user:{id:updatedUser._id.toString()}};
     const authtoken = jwt.sign(payload,secretKey,{expiresIn:'1h'});
     
     res.json({authtoken});
