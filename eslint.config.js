@@ -38,5 +38,5 @@ module.exports = defineConfig([{
         parserOptions: {},
     },
 
-    files: ["**/.eslintrc.{js,cjs}"],
+    files: ["**/.eslintrc.config.{js,cjs}"],
 }]);
